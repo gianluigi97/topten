@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top 10</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:      #16181d;
+      --panel:    #1e2128;
+      --panel-2:  #262a33;
+      --line:     #333846;
+      --text:     #e7e9ee;
+      --muted:    #8b91a0;
+      --gold:     #e6b34a;
+      --silver:   #c2c8d4;
+      --bronze:   #cd8a5e;
+      --green:    #2fbf71;
+      --green-bg: #16382a;
+      --green-ln: #2b7a52;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 3rem 1.25rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { width: 100%; max-width: 640px; }
+
+    header {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cerca {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .categoria-input {
+      flex: 1;
+      min-width: 160px;
+      font: 500 1rem 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.6rem 0.85rem;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .categoria-input::placeholder { color: var(--muted); }
+    .categoria-input:hover { border-color: #454b5c; }
+    .categoria-input:focus {
+      outline: none;
+      background: var(--panel-2);
+      border-color: var(--green-ln);
+    }
+
+    .vai {
+      flex-shrink: 0;
+      font: 700 1.1rem 'Space Grotesk', sans-serif;
+      color: var(--ink);
+      background: var(--green);
+      border: none;
+      border-radius: 10px;
+      width: 2.6rem;
+      height: 2.6rem;
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+    .vai:hover { filter: brightness(1.08); }
+    .vai:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+    header .hint {
+      display: block;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .riga {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.1rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+      text-align: left;
+      width: 100%;
+      color: inherit;
+      font: inherit;
+    }
+
+    .riga:hover { background: var(--panel-2); border-color: #454b5c; }
+    .riga:active { transform: scale(0.995); }
+    .riga:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+    .rank {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      width: 2.1rem;
+      height: 2.1rem;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--muted);
+    }
+    .riga:nth-child(1) .rank { background: var(--gold);   color: #2a2000; }
+    .riga:nth-child(2) .rank { background: var(--silver); color: #1e2128; }
+    .riga:nth-child(3) .rank { background: var(--bronze); color: #2a1400; }
+
+    .nome { flex: 1; font-weight: 500; font-size: 1rem; }
+
+    .punteggio {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .check { width: 1.1rem; height: 1.1rem; opacity: 0; transition: opacity 0.15s ease; color: var(--green); flex-shrink: 0; }
+
+    /* --- stato selezionato (verde) --- */
+    .riga.selezionato {
+      background: var(--green-bg);
+      border-color: var(--green-ln);
+    }
+    .riga.selezionato .nome,
+    .riga.selezionato .punteggio { color: var(--green); }
+    .riga.selezionato .check { opacity: 1; }
+
+    .vuoto { color: var(--muted); text-align: center; padding: 2rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .riga { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <form class="cerca" method="get" action="/" role="search">
+        <h1>Top 10</h1>
+        <input
+          type="text"
+          name="categoria"
+          class="categoria-input"
+          placeholder="scrivi una categoria…"
+          value="{{ categoria|default('', true) }}"
+          autocomplete="off"
+          autofocus
+          aria-label="Categoria della classifica">
+        <button type="submit" class="vai" aria-label="Mostra la classifica">&rarr;</button>
+      </form>
+      <span class="hint">clicca una voce per selezionarla</span>
+    </header>
+
+    <ul id="classifica">
+      {% for item in classifica %}
+      <li>
+        <button type="button" class="riga" data-id="{{ loop.index }}">
+          <span class="rank">{{ loop.index }}</span>
+          <span class="nome">{{ item.nome }}</span>
+          <span class="punteggio">{{ item.punteggio }}</span>
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        </button>
+      </li>
+      {% else %}
+      <li class="vuoto">
+        {% if categoria %}Nessun risultato per "{{ categoria }}".{% else %}Scrivi una categoria per vedere la classifica.{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <script>
+    // Click su una riga -> alterna il verde (clicca di nuovo per deselezionare)
+    document.getElementById('classifica').addEventListener('click', function (e) {
+      const riga = e.target.closest('.riga');
+      if (!riga) return;
+      riga.classList.toggle('selezionato');
+    });
+  </script>
+</body>
+</html>
