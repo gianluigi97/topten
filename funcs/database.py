@@ -5,7 +5,8 @@ import os
 from funcs.stringMatch import similarity
 
 # load_dotenv(r"C:\GianC\topten\key.env") # Windows
-load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
+# load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
+load_dotenv()
 
 class Database:
 

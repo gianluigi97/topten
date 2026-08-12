@@ -4,7 +4,8 @@ import os
 import json
 
 # load_dotenv(r"C:\GianC\topten\key.env") # Windows
-load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
+# load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
+load_dotenv()
 
 class ListTen:
 
