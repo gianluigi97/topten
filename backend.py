@@ -18,10 +18,18 @@ def index():
             categoria=""
         )
 
-    raw_ranking = service.get_rank(richiesta=categoria)
-    db.insert(table_name="records", lista_ranking=service.format_ia_response(raw_ranking, categoria=categoria, db=True))
-    classifica = service.format_ia_response(raw_ranking) if categoria else []
+    existing_list = db.select(table_name="records", famiglia=categoria)
 
+    if existing_list:
+        classifica = existing_list
+
+    else: 
+        # richiesta lista a chatgpt
+        raw_ranking = service.get_rank(richiesta=categoria)
+        db.insert(table_name="records", lista_ranking=service.format_ia_response(raw_ranking, categoria=categoria.lower(), db=True))
+        classifica = service.format_ia_response(raw_ranking) if categoria else []
+
+        
     return render_template(
         "index.html", 
         classifica=classifica, 

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, text, insert, MetaData, Table
+from sqlalchemy import create_engine, text, insert, MetaData, Table, select
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
@@ -45,6 +45,26 @@ class Database:
         self._tables[table_name] = table
         return table
 
+    def select(self, table_name, famiglia):
+
+        table = self._get_table(table_name)
+        stmt = select(table.c.posizione, table.c.nome).where(table.c.famiglia==famiglia.lower())
+
+        with self._get_engine().begin() as conn:
+            res = conn.execute(stmt).fetchall()
+            if res: 
+                return [
+                        {
+                            'posizione' : r[0],
+                            'nome' : r[1],
+                            'famiglia' : famiglia
+                        }
+                        for r in res
+                    ]
+            else: 
+                return None
+
+
 
     def insert(self, table_name, lista_ranking: dict):
 
@@ -60,3 +80,11 @@ class Database:
         with self._get_engine().begin() as conn:
             conn.execute(stmt, lista_ranking)
 
+
+if __name__ == "__main__":
+
+    db = Database(database="Topten")
+    result = db.select(table_name="records", famiglia="invenzioni dell'uomo piu importanti della storia")
+
+    for r in result: 
+        print(r)
