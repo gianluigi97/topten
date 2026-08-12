@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 import json
 
-load_dotenv("/Users/gianluigimosti/WorkPlace/topten/key.env")
+# load_dotenv(r"C:\GianC\topten\key.env") # Windows
+load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
 
 class ListTen:
 
@@ -76,13 +77,30 @@ class ListTen:
 
         return json.loads(response.output_text)
 
-    def format_ia_response(self, response):
-
-        lista = []
-
-        for el in response['classifica']: 
-            lista.append({'nome' : el.get("nome")})
-
-        return lista
 
 
+    def format_ia_response(self, response, categoria=None, db=False):
+
+        if not db:
+            return [
+                {"nome": el.get("nome")}
+                for el in response["classifica"]
+            ]
+
+        return [
+            {
+                "posizione": el.get("posizione"),
+                "nome": el.get("nome"),
+                "famiglia": categoria
+            }
+            for el in response["classifica"]
+    ]
+
+
+if __name__ == "__main__":
+
+    lt = ListTen()
+    response = lt.get_rank(richiesta="nomi femminili più usati in italia")
+
+    for el in response['classifica']:
+        print(el)
