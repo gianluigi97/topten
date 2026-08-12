@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 import json
 
-load_dotenv(r"C:\GianC\topten\key.env")
+# load_dotenv(r"C:\GianC\topten\key.env") # Windows
+load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
 
 class ListTen:
 

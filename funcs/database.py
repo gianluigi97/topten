@@ -2,8 +2,10 @@ from sqlalchemy import create_engine, text, insert, MetaData, Table, select
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
+from funcs.stringMatch import similarity
 
-load_dotenv(r"C:\GianC\topten\key.env")
+# load_dotenv(r"C:\GianC\topten\key.env") # Windows
+load_dotenv(r"/Users/gianluigimosti/WorkPlace/topten/key.env") # Mac
 
 class Database:
 
@@ -45,14 +47,40 @@ class Database:
         self._tables[table_name] = table
         return table
 
-    def select(self, table_name, famiglia):
+    def similarString(self, customer_input, accurancy=0.8):
 
-        table = self._get_table(table_name)
-        stmt = select(table.c.posizione, table.c.nome).where(table.c.famiglia==famiglia.lower())
+        table = self._get_table("famiglie_categorie")
+        stmt = select(table)
 
         with self._get_engine().begin() as conn:
             res = conn.execute(stmt).fetchall()
-            if res: 
+
+        famiglie = [r[0] for r in res]
+
+        result_string = None
+        actual_ratio = 0
+
+        for existing_fam in famiglie: 
+            ratio = similarity(existing_fam, customer_input)
+            if ratio > actual_ratio and ratio >= accurancy:
+                actual_ratio = ratio
+                result_string = existing_fam
+            else: 
+                continue
+
+        return result_string
+
+
+    def select(self, table_name, c_input):
+
+        table = self._get_table(table_name)
+        famiglia = self.similarString(c_input)
+        if famiglia: 
+            stmt = select(table.c.posizione, table.c.nome).where(table.c.famiglia==famiglia.lower())
+
+            with self._get_engine().begin() as conn:
+                res = conn.execute(stmt).fetchall()
+
                 return [
                         {
                             'posizione' : r[0],
@@ -61,9 +89,8 @@ class Database:
                         }
                         for r in res
                     ]
-            else: 
-                return None
-
+        else:
+            return None
 
 
     def insert(self, table_name, lista_ranking: dict):
@@ -84,7 +111,6 @@ class Database:
 if __name__ == "__main__":
 
     db = Database(database="Topten")
-    result = db.select(table_name="records", famiglia="invenzioni dell'uomo piu importanti della storia")
+    result = db.select(table_name="records", c_input="invenzioni piu importanti della storia dell'uomo")
 
-    for r in result: 
-        print(r)
+    print(result)
