@@ -1,0 +1,20 @@
+services:
+  topten:
+    build: .
+    container_name: topten
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8000"
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - api_key=${api_key}
+    networks:
+      - dbnet
+
+networks:
+  dbnet:
+    external: true
+    name: dbnet
